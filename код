@@ -1,0 +1,1091 @@
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <chrono>
+#include <cstdlib> 
+using namespace std;
+struct node 
+{
+    int data;
+    struct node* prev;
+    struct node* next;
+};
+
+struct node* head = NULL;
+struct node* last = NULL;
+struct node* current = NULL;
+void display() 
+{
+    struct node* ptr = head;
+
+    while (ptr != NULL) 
+    {
+        cout << ptr->data << " ";
+        ptr = ptr->next;
+    }
+    cout << endl;
+}
+void insert(int data) 
+{
+
+    struct node* link = (struct node*)malloc(sizeof(struct node));
+
+    link->data = data;
+    link->prev = NULL;
+    link->next = NULL;
+
+
+    if (head == NULL) 
+    {
+        head = link;
+        return;
+    }
+
+    current = head;
+
+
+    while (current->next != NULL)
+        current = current->next;
+
+    current->next = link;
+    last = link;
+    link->prev = current;
+}
+void Mas()
+{
+    int variant;
+    
+    do
+    {
+
+        cout << "Введите вариант заполнения массива\n";
+        cout << "1.Ввод размерности и автоматическое заполнение рандомными числами\n";
+        cout << "2.Ввод чисел и подсчёт размерности\n";
+        cout << "3.Считывание с файла\n";
+        cout << "4.Выход\n";
+        cout << "\n";
+
+        cout << "Вы выбрали ====> ";
+        cin >> variant;
+
+        system("cls");
+
+        switch (variant)
+        {
+        case 1:
+        {
+            int kol;
+            cout << "Введите размер массива ====>";
+            cin >> kol;
+            if (kol == 0)
+                cout << "В массиве нет элементов";
+            int* mas = new int[kol];
+            for (int i = 0; i <kol; i++)
+            {
+                mas[i] = 0 + rand() % 99; 
+                cout << mas[i] << " ";
+            }
+            cout << "\n";
+            delete[] mas;
+            break;
+        }
+        case 2:
+        {
+            int* arr = new int[0];
+            int* temp;
+            int n = 0, num;
+            std::cout << "!!!Введите элементы списка через пробел (закончите ввод любой буквой)!!!: " << '\n';
+            std::cin >> num;
+            while (!std::cin.fail()) {
+                temp = new int[n + 1];
+                for (int i = 0; i != n; i++) {
+                    temp[i] = arr[i];
+                }
+                temp[n] = num;
+                delete[] arr;
+                arr = temp;
+                n++;
+                std::cin >> num;
+            }
+            cout << "Вы ввели: ";
+            for (int i = 0; i <n; i++)
+            {
+               
+                cout << arr[i] << " ";
+            }
+            if (n==0)
+            cout << "В массиве нет элементов";
+            else
+            cout << "\nРазмерность введенного массива "<< n;
+            cout << "\n";
+            std::cin.clear();
+            std::cin.ignore(32767, '\n');
+        
+            break;
+        }
+        case 3:
+        {
+            string arr[9];
+            ifstream file("massiv.txt");
+            if (file.is_open())
+            {
+
+                for (int i = 0; i < 9; ++i)
+                {
+                    file >> arr[i];
+                }
+
+            }
+
+            for (int i = 0; i < 9; ++i)
+            {
+                cout << arr[i] << " ";
+            }
+            cout << endl;
+
+            break;
+        }
+        case 4:
+            break;
+        }
+    } while (variant != 4);
+}
+void deleteAllNodes() {
+    node* temp = new node();
+    while (head != NULL) {
+        temp = head;
+        head = head->next;
+        delete[] temp;
+    }
+
+}
+void Delete(int l)//Удаление по значению
+{
+    node* temp = head;
+    while ((temp != NULL) && (temp->data != l))
+        temp = temp->next;
+    if (temp == NULL)
+        return;
+
+    node* prev = temp->prev;
+    node* next = temp->next;
+    if (prev != NULL)
+        prev->next = next;
+    if (next != NULL)
+        next->prev = prev;
+    delete temp;
+    if (prev == NULL)
+    { 
+        cout << "Ошибка: Такого элемента нет в массиве\n"; 
+        display(); 
+        deleteAllNodes();
+    }
+    else
+    { // found match
+        cout << "\n";
+        display();
+        deleteAllNodes();
+    }
+}
+int displayEle(struct node* head, int x)
+{
+
+    if (head == NULL)
+        return -1;
+
+
+    if (x == 0)
+        return head->data;
+
+
+    return displayEle(head->next, x - 1);
+}
+
+int search(node* head, int x)
+{
+
+    node* temp = head;
+
+    int pos = 0;
+
+    while (temp->data != x
+        && temp->next != NULL) {
+
+        pos++;
+
+        temp = temp->next;
+    }
+
+    if (temp->data != x)
+        return -1;
+
+
+    return (pos + 1);
+}
+
+void addElement(node*& head, int newdata)
+{
+    //Вставка узла в конец списка не должна вызывать затруднений: необходимо изменить
+    //Tail-указатель прежнего последнего элемента на адрес нового узла, затем правильно
+    //связать новый узел с двусвязным списком
+
+    node* tmp = new node;
+    tmp->data = newdata;
+    tmp->next = NULL;
+    tmp->prev = NULL;
+
+    if (!head)
+        head = tmp;
+    else
+    {
+
+        node* last = head;
+        while (last->next != NULL)
+            last = last->next;
+
+        last->next = tmp;
+        tmp->prev = last;
+    }
+}
+//для удаления первого элемента
+void delFirst()
+{
+    struct node* NodeToDel;
+    NodeToDel = head;
+    head = head->next;
+    head->prev = NULL;
+    free(NodeToDel);
+
+}
+//для удаления последнего элемента
+void delLast()
+{
+    struct node* NodeToDel;
+    NodeToDel = last;
+    last = last->prev;
+    last->next = NULL;
+    free(NodeToDel);
+
+}
+//удаление элементов по индексу
+void deleteNode(int pos)
+{
+    struct node* curNode;
+    int i;
+
+    curNode = head;
+    for (i = 1; i < pos && curNode != NULL; i++)
+    {
+        curNode = curNode->next;
+    }
+
+    if (pos == 1)
+    {
+        delFirst();
+    }
+    else if (curNode == last)
+    {
+        delLast();
+    }
+    else if (curNode != NULL)
+    {
+        curNode->prev->next = curNode->next;
+        curNode->next->prev = curNode->prev;
+
+        free(curNode);
+    }
+
+}
+
+int main()
+{
+    std::chrono::system_clock::time_point start;
+    std::chrono::system_clock::time_point end;
+    std::chrono::duration <double> time;
+    int task, nom, nam;
+    int kol=0;
+    setlocale(LC_ALL,"Russian");
+   
+    do
+    {
+
+        cout << "Введите номер задания:\n";
+        cout << "1.Формирование целочисленного одномерного массива размерности N\n";
+        cout << "2.Время создания массива\n";
+        cout << "3.Вставка, удаление и получение элемента массива + определение времени\n";
+        cout << "4.Формирование двусвязного списка по вариантам + определение времени\n";
+        cout << "5.Вставка, удаление и получение элемента двусвязного списка  + определение времени\n";
+        cout << "6.Выход\n";
+        cout << "\n";
+
+        cout << "Вы выбрали ====> ";
+        cin >> task;
+
+        system("cls");
+
+        switch (task)
+        {
+        case 1:
+            Mas();
+            break;
+        case 2:
+        {
+            do
+            {
+
+                cout << "Нужно померить время создания:\n";
+                cout << "1.Рандомного массива\n";
+                cout << "2.Массива пользователя\n";
+                cout << "3.Массива из файла\n";
+                cout << "4.Выход\n";
+                cout << "\n";
+
+                cout << "Вы выбрали ====> ";
+                cin >> nom;
+
+                system("cls");
+
+                switch (nom)
+                {
+                   case 1:
+                   {
+     
+                    start = std::chrono::system_clock::now();
+                    int kol;
+                    cout << "Введите размер массива ====>";
+                    cin >> kol;
+                    if (kol == 0)
+                        cout << "В массиве нет элементов";
+                    int* mas = new int[kol];
+                    for (int i = 0; i < kol; i++)
+                    {
+                        mas[i] = 0 + rand() % 99;
+                        cout << mas[i] << " ";
+                    }
+                    cout << "\n";
+                    delete[] mas;
+
+                    end = std::chrono::system_clock::now();
+                    time = end - start;
+                    std::cout << "Время на создание массива: " << time.count() << '\n';
+                    break;
+                    }
+                   case 2:
+                   {
+                       start = std::chrono::system_clock::now();
+                       int* arr = new int[0];
+                       int* temp;
+                       int n = 0, num;
+                       std::cout << "!!!Введите элементы списка через пробел (закончите ввод любой буквой)!!!: " << '\n';
+                       std::cin >> num;
+                       while (!std::cin.fail()) {
+                           temp = new int[n + 1];
+                           for (int i = 0; i != n; i++) {
+                               temp[i] = arr[i];
+                           }
+                           temp[n] = num;
+                           delete[] arr;
+                           arr = temp;
+                           n++;
+                           std::cin >> num;
+                       }
+                       cout << "Вы ввели: ";
+                       for (int i = 0; i < n; i++)
+                       {
+
+                           cout << arr[i] << " ";
+                       }
+                       cout << "\n";
+                       std::cin.clear();
+                       std::cin.ignore(32767, '\n');
+
+                      
+
+                       end = std::chrono::system_clock::now();
+                       time = end - start;
+                       std::cout << "Время на создание массива: " << time.count() << '\n';
+                       break;
+                   }
+                   case 3:
+                   {
+                       start = std::chrono::system_clock::now();
+                       string arr[9];
+                       ifstream file("massiv.txt");
+                       if (file.is_open())
+                       {
+
+                           for (int i = 0; i < 9; ++i)
+                           {
+                               file >> arr[i];
+                           }
+
+                       }
+                       for (int i = 0; i < 9; i++)
+                       {
+
+                           cout << arr[i] << " ";
+                       }
+                       cout << "\n";
+                       end = std::chrono::system_clock::now();
+                       time = end - start;
+                       std::cout << "Время на создание массива: " << time.count() << '\n';
+                       break;
+                   }
+                  
+                   case 4:
+                   break;
+                }
+            } while (nom != 4);
+        }
+        case 3:
+        {
+            int k, l;
+            do
+            {
+
+                cout << "\nВыберите задание :\n";
+                cout << "1.Вставка элемента массива + определение времени\n";
+                cout << "2.Удаление элемента массива + определение времени\n";
+                cout << "3.Получение элемента массива + определение времени\n";
+                cout << "4.Выход\n";
+                cout << "\n";
+
+                cout << "Вы выбрали ====> ";
+                cin >> nam;
+
+                system("cls");
+
+                switch (nam)
+                {
+                    case 1:
+                    {
+                        int kol;
+                        cout << "Введите размер массива ====>";
+                        cin >> kol;
+                        if (kol == 0)
+                            cout << "В массиве нет элементов";
+                        int* mas = new int[kol];
+                        for (int i = 0; i < kol; i++)
+                        {
+                            mas[i] = 0 + rand() % 99;
+                            cout << mas[i] << " ";
+                        }
+                       
+                        cout << "\n"; 
+                        int vstavka;
+                        cout << "Введите элемент, который хотите вставить===> ";
+                        cin >> vstavka;
+                        start = std::chrono::system_clock::now();
+                        cout << "\n";
+                        int element= kol + 1;
+                        int* arr = new int[element];
+                        for (int i = 0; i < kol; i++)
+                        {
+                            arr[i] = mas[i];
+                        }
+                        delete[] mas;
+                        mas = arr;
+                        arr[kol]=vstavka;
+                        cout << " Итоговый массив:\n ";
+                        for (int i = 0; i < element; i++) 
+                        {
+                            cout << arr[i] << " ";
+                        }
+                        cout << endl; 
+                        end = std::chrono::system_clock::now();
+                        time = end - start;
+                        std::cout << "Время на вставку элемента: " << time.count() << '\n';
+                       
+                         delete[] arr;
+
+                        break;
+                    }
+                    case 2:
+                    {
+                        do
+                        {
+                            cout << "\n1.По индексу \n";
+                            cout << "2.По значению\n";
+                            cout << "3.Выход\n";
+                            cout << "Вы выбрали ====> ";
+                            cin >> k;
+                            system("cls");
+                            switch (k)
+                            {
+                               case 1:
+                              {
+
+                                cout << "Введите размерность массива===> ";
+                                int n;
+                                cin >> n;
+                                if (n == 0) 
+                                {
+                                    cout << "В массиве ноль элементов";
+                                }
+                                else 
+                                {
+
+                                    int* arr = new int[n];
+                                    for (int i = 0; i < n; i++) 
+                                    {
+                                        arr[i] = 0 + rand() % 99;
+                                    }
+                                    for (int i = 0; i < n; i++)
+                                    {
+                                        cout << arr[i] << " ";
+                                    }
+                                    cout << endl;
+
+
+                                     
+                                   
+                                    int* massiv = new int[n - 1];
+                                    int index = 0;
+                                    cout << "Напишите позицию элемента для удаления===> ";
+                                    cin >> index;
+                                    start = std::chrono::system_clock::now();
+                                    if ((index > n) || (index<0))
+                                    {
+                                        cout << "!!!Неверный индекс!!!\n ";
+                                        delete[] arr;
+                                        delete[] massiv;
+                                    }
+                                    else
+                                        if ((index <= n) && (index > 0)) 
+                                      {
+                                        index--;
+                                        for (int i = 0; i < index; i++)
+                                        {
+                                            massiv[i] = arr[i];
+                                        }
+                                        for (int i = index + 1; i < n; i++) 
+                                        {
+                                            massiv[i - 1] = arr[i];
+                                        }
+                                        delete[] arr;
+                                        arr = massiv;
+                                        for (int i = 0; i < n - 1; i++) 
+                                        {
+                                            cout << massiv[i] << " ";
+                                        }
+                                        cout << endl;  
+
+                                        n--;
+                                        if (n == 0) 
+                                          {
+                                            cout << endl;
+                                            cout << "Нет элементов для удаления" << endl;
+                                            cout << endl;
+                                            delete[] massiv;
+                                            break;
+                                          }
+                                      
+                                        cout << endl;
+
+                                       
+                                        end = std::chrono::system_clock::now();
+                                        time = end - start;
+                                        std::cout << "Время на удаление элемента: " << time.count() << '\n';
+                                       
+                                      }
+                                  }
+                                break; 
+
+                               }
+                                    
+                             case 2:
+                             {
+                                 cout << "Введите размерность массива===> ";
+                                 int n;
+                                 cin >> n;
+                                 if (n == 0)
+                                 {
+                                     cout << "В массиве ноль элементов";
+                                 }
+                                 int* arr = new int[n];
+                                 for (int i = 0; i < n; i++) {
+                                     arr[i] = 0 + rand() % 99;
+                                 }
+                                 for (int i = 0; i < n; i++) {
+                                     cout << arr[i] << " ";
+                                 }
+                                 cout << endl;
+                                 int* massiv = new int[n - 1];
+                                 int znachenie = 0;
+                                 cout << "Введите значение элемента, который хотите удалить===> ";
+                                 cin >> znachenie;
+                                 start = std::chrono::system_clock::now();
+                                 int rast = distance(arr, find(arr, arr + n, znachenie));
+                                 //std::distance - это функция объединения интерфейсов, цель которой - позволить
+                                 //вычислить расстояния между различными типами итераторов: произвольный, двунаправленный, 
+                                 //прямой и т. Д. Эта функция предназначена для сокрытия неэффективности прямого вычисления
+                                 //расстояния для итераторы с неслучайным доступом в ситуациях, когда вы действительно знаете,
+                                 //что делаете, и действительно хотите принять эту неэффективность. 
+                                 if (rast != n) 
+                                   {
+
+                                     int* mass = new int[n - 1];
+                                     for (int i = 0; i < rast; i++)
+                                     {
+                                         mass[i] = arr[i];
+                                     }
+                                     for (int i = rast + 1; i < n; i++) 
+                                     {
+                                         mass[i - 1] = arr[i];
+                                     }
+
+                                     delete[] arr;
+                                     arr = mass;
+                                     cout << "Массив после удаления элемента\n";
+                                     for (int i = 0; i < n - 1; i++) 
+                                     {
+                                         cout << mass[i] << " ";
+                                     }
+                                     cout << endl; 
+                                     n--;
+                                     end = std::chrono::system_clock::now();
+                                     time = end - start;
+                                     std::cout << "\nВремя на удаление элемента: " << time.count() << '\n';
+                                 }
+                                 break;
+                             }
+                            case 3:
+                            break;
+                            }
+                        } while (k != 3);
+                        break;
+                    }
+                     case 3:
+                     {
+                      do
+                         {
+                            
+                            cout << "\n1.По индексу + время\n";
+                            cout << "2.По значению + время\n";
+                            cout << "3.Выход\n";
+                            cout << "Вы выбрали ====> ";
+                            cin >> l;
+                            system("cls");
+                            switch (l)
+                             {
+                              case 1:
+                              {
+                                  cout << "Введите размерность массива===> ";
+                                  int n;
+                                  cin >> n;
+                                  if (n == 0)
+                                  {
+                                      cout << "В массиве ноль элементов";
+                                  }
+                                  int* arr = new int[n];
+                                  for (int i = 0; i < n; i++) {
+                                      arr[i] = 0 + rand() % 99;
+                                  }
+                                  for (int i = 0; i < n; i++) {
+                                      cout << arr[i] << " ";
+                                  }
+                                  cout << "\nВведите индекс для получения элемента===> ";
+                                  int ind;
+                                  cin >> ind;
+                                  start = std::chrono::system_clock::now();
+                                  if ((ind > 0) && (ind <= n))
+                                  {
+                                      cout << "\nВаш элемент ===> " << arr[ind - 1] << endl;
+                                      delete[] arr;   
+                                  }
+                                  else
+
+                                  {
+                                      cout << "\nПРОВЕРЬТЕ ВВОД\n";
+                                      delete[] arr;
+                                      break;
+                                  }
+                                  end = std::chrono::system_clock::now();
+                                  time = end - start;
+                                  std::cout << "\nВремя на поиск элемента: " << time.count() << '\n';
+                                  break;
+                              }
+                              case 2:
+                              {
+                                  cout << "Введите размерность массива===> ";
+                                  int n;
+                                  bool l=0;
+                                  cin >> n;
+                                  if (n == 0)
+                                  {
+                                      cout << "В массиве ноль элементов";
+                                  }
+                                  int* arr = new int[n];
+                                  for (int i = 0; i < n; i++) {
+                                      arr[i] = 0 + rand() % 99;
+                                  }
+                                  for (int i = 0; i < n; i++) {
+                                      cout << arr[i] << " ";
+                                  }
+                                  cout << "\nВведите значение элемента===> ";
+                                  int znach;
+                                  cin >> znach;
+                                  start = std::chrono::system_clock::now();
+                                  for (int i = 0; i < n; i++)
+                                  {
+                                      if (arr[i] == znach)
+                                      {
+                                          cout << "Индекс этого элемента равен " << i + 1 << "\n";
+                                          l = 1;
+                                      }
+                                  }
+                                  if (l == 0)
+                                  {
+                                      cout << "\n!!!Такого элемента нет!!!\n ";
+                                      break;
+                                  }
+                                  end = std::chrono::system_clock::now();
+                                  time = end - start;
+                                  std::cout << "\nВремя на поиск элемента: " << time.count() << '\n';
+                                  delete[] arr;
+                                  break;
+                              }
+                              case 3:
+                               break;
+                             }
+                          }     
+                              while (l != 3);
+                        break;
+                     }
+                    case 4:
+                    break;
+                }
+            } while (nam != 4);
+        }
+        case 4:
+        {
+            int k;
+            do
+            {
+                
+                cout << "\nВыберите задание :\n";
+                cout << "1.Рандомный массив размерности N + время создания \n";
+                cout << "2.Массив пользователя + определение времени\n";
+                cout << "3.Получение  массива из файла + определение времени\n";
+                cout << "4.Выход\n";
+                cout << "\n";
+
+                cout << "Вы выбрали ====> ";
+                cin >> k;
+
+                system("cls");
+
+                switch (k)
+                {
+                case 1:
+                {
+                    int n;
+                    cout << "Введите кол-во элементов ===> ";
+                    start = std::chrono::system_clock::now();
+                    cin >> n;
+                    cout << endl;
+                    for (int i = 0; i < n; i++) 
+                    {
+
+                        insert(0 + rand() % 99);
+                    }
+                    display();
+                    cout << endl;
+                    end = std::chrono::system_clock::now();
+                    time = end - start;
+                    std::cout << "\nВремя на создание рандомного массива: " << time.count() << '\n';
+                    deleteAllNodes();
+                    break;
+                }
+                case 2:
+                {
+                    int* arr = new int[0];
+                    int* temp;
+                    int n = 0, num;
+                    std::cout << "!!!Введите элементы списка через пробел (закончите ввод любой буквой)!!!: " << '\n';
+                    start = std::chrono::system_clock::now();
+                    std::cin >> num;
+                    while (!std::cin.fail()) {
+                        temp = new int[n + 1];
+                        for (int i = 0; i != n; i++) {
+                            temp[i] = arr[i];
+                        }
+                        temp[n] = num;
+                        delete[] arr;
+                        arr = temp;
+                        n++;
+                        std::cin >> num;
+                    }
+                    cout << "Вы ввели: ";
+                    for (int i = 0; i < n; i++)
+                    {
+                        insert(arr[i]);
+                    }
+                    if (n == 0)
+                        cout << "В массиве нет элементов";
+                    else
+                        cout << "\nРазмерность введенного массива " << n << "\n";
+                    display();
+                    cout << "\n";
+                    end = std::chrono::system_clock::now();
+                    time = end - start;
+                    std::cout << "\nВремя на создание рандомного массива: " << time.count() << '\n';
+                    deleteAllNodes();
+                    std::cin.clear();
+                    std::cin.ignore(32767, '\n');
+
+                    break;
+                }
+                case 3:
+                {
+                    start = std::chrono::system_clock::now();
+                    int znachenie;
+                    ifstream file("massiv.txt");
+                    if (file.is_open())
+                    {
+
+                        for (int i = 0; i < 9; ++i)
+                        {
+                            file >> znachenie;
+                            insert(znachenie);
+                        }
+
+                    }
+                    cout << "Массив из файла\n";
+                    display();
+                    cout << endl;
+                    end = std::chrono::system_clock::now();
+                    time = end - start;
+                    std::cout << "\nВремя на чтение массива из файла: " << time.count() << '\n';
+                    deleteAllNodes();
+                    break;
+                }
+                    case 4:
+                    break;
+                }
+            } 
+            while (k != 4);
+            break;
+        }
+        case 5:
+        {
+            int l;
+            do
+            {
+                cout << "\n1.Вставка элемента двусвязного списка + время\n";
+                cout << "2.Удаление элемента двусвязного списка + время\n";
+                cout << "3.Получение элемента двусвязного списка + время\n";
+                cout << "4.Выход\n";
+                cout << "\n";
+
+                cout << "Вы выбрали ====> ";
+                cin >> l;
+
+                system("cls");
+                switch (l)
+                {
+                case 1:
+                {
+                    int n, vstavka;
+                    cout << "Введите кол-во элементов ===> ";
+                    cin >> n;
+                    cout << endl;
+                    for (int i = 0; i < n; i++)
+                    {
+
+                        insert(0 + rand() % 99);
+                    }
+                    cout << "Массив до вставки\n";
+                    display();
+                    cout << endl <<"\nВведите элемент, который вы хотите вставить===> ";
+                    cin >> vstavka;
+                    start = std::chrono::system_clock::now();
+                    addElement(head, vstavka);
+                    cout << "\nМассив после вставки\n";
+                    display();
+                    cout << endl;
+                    end = std::chrono::system_clock::now();
+                    time = end - start;
+                    std::cout << "\nВремя вставки: " << time.count() << '\n';
+                    deleteAllNodes();
+                    break;
+                }
+                case 2:
+                {
+                    int j;
+                    do
+                    {
+                        cout << "\n1.Удаление по индексу\n";
+                        cout << "2.Удаление по значению\n";
+                        cout << "3.Выход\n";
+                        cout << "Вы выбрали ====> ";
+                        cin >> j;
+
+                        system("cls");
+                        switch (j)
+                        {
+                        case 1:
+                        {
+                            int n;
+                            cout << "Введите кол-во элементов ===> ";
+                            cin >> n;
+                            cout << endl;
+                            for (int i = 0; i < n; i++)
+                            {
+
+                                insert(0 + rand() % 99);
+                            }
+                            cout << "\nМассив до удаления элемента: \n";
+                            display();
+                            int l;
+                            start = std::chrono::system_clock::now();
+                            cout << "\nВведите индекс элемента для удаления===> ";
+                            cin >> l;
+                            if ((l <= n) && (l > 0))
+                            {
+                                deleteNode(l);
+                                cout << "\nМассив после удаления\n";
+                                display();
+                                deleteAllNodes();
+                            }
+                            else
+                            {
+                                cout << "Ошибка : Индекс не подходит условию";
+                                deleteAllNodes();
+                                break;
+                            }
+                            end = std::chrono::system_clock::now();
+                            time = end - start;
+                            std::cout << "\nВремя удаления элемента по индексу " << time.count() << '\n';
+                            break;
+                        }
+                        case 2:
+                        {
+                            int n;
+                            cout << "Введите кол-во элементов ===> ";
+                            cin >> n;
+                            cout << endl;
+                            for (int i = 0; i < n; i++)
+                            {
+
+                                insert(0 + rand() % 99);
+                            }
+                            cout << "\nМассив до удаления элемента: \n";
+                            display();
+                            start = std::chrono::system_clock::now();
+                            int l;
+                            cout << "\nВведите значение элемента для удаления===> ";
+                            cin >> l;
+                            Delete(l);
+                            end = std::chrono::system_clock::now();
+                            time = end - start;
+                            std::cout << "\nВремя удаления элемента по значению: " << time.count() << '\n';
+                            deleteAllNodes();
+                            break;
+                        }
+                        case 3:
+                        break;
+                        }
+                    }
+                    while (j != 3);
+                    break;
+                }
+                case 3:
+                {
+                    int d;
+                    do
+                    {
+                        cout << "\n1.Получение элемента по индексу\n";
+                        cout << "2.Получение элемента  по значению\n";
+                        cout << "3.Выход\n";
+                        cout << "Вы выбрали ====> ";
+                        cin >> d;
+
+                        system("cls");
+                        switch (d)
+                        { 
+                        case 1:
+                        {
+                            int n,l;
+                            cout << "Введите кол-во элементов ===> ";
+                            cin >> n;
+                            cout << endl;
+                            for (int i = 0; i < n; i++)
+                            {
+
+                                insert(0 + rand() % 99);
+                            }
+                            cout << "\n";
+                            display();
+                            start = std::chrono::system_clock::now();
+                            cout << "\nВведите индекс ===> ";
+                            cin >> l;
+
+                            if ((l <= n) && (l > 0))
+                            {
+
+                                cout <<"\nВаш элемент ===> " <<displayEle(head, l - 1) << endl;
+                                deleteAllNodes();
+                            }
+                            else
+                            {
+                                cout << "Ошибка : Индекс не подходит условию";
+                                deleteAllNodes();
+                                break;
+                            }
+                            end = std::chrono::system_clock::now();
+                            time = end - start;
+                            std::cout << "\nВремя получения элемента по индексу: " << time.count() << '\n';
+                            break;
+                        }
+                        case 2:
+                        {
+                            int n , x;
+                            cout << "Введите кол-во элементов ===> ";
+                            cin >> n;
+                            cout << endl;
+                            for (int i = 0; i < n; i++)
+                            {
+
+                                insert(0 + rand() % 99);
+                            }
+                            cout << "\n";
+                            display();
+                            cout << "\nВведите элемент для получения===> ";
+                            start = std::chrono::system_clock::now();
+                            cin >> x;
+                            int c = search(head, x);
+                            if (c == -1) 
+                            {
+                                cout << "\nЭтого элемента нет в массиве " << endl;
+                                deleteAllNodes();
+                                break;
+                            }
+                            else 
+                            {
+                                cout << "\nИндекс этого элемента ===> "<< c;
+                                deleteAllNodes();
+                            }
+                            end = std::chrono::system_clock::now();
+                            time = end - start;
+                            std::cout << "\nВремя получения элемента по элементу: " << time.count() << '\n';
+                            break;
+                        }
+                        case 3:
+                        break;
+                        }
+                    } 
+                    while (d != 3);
+                }
+                case 4:
+                break;
+                }
+            }
+            while (l != 4);
+        }
+        case 6:
+            break;
+        }
+    } while (task != 6);
+}
+
